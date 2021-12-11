@@ -80,7 +80,8 @@ class Products with ChangeNotifier {
     //       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     // ),
   ];
-
+  String? authToken;
+  Products(this.authToken, this._items);
   List<Product> get item {
     return [..._items];
   }
@@ -110,7 +111,7 @@ class Products with ChangeNotifier {
 
   Future<void> fetchAndSetData() async {
     final url =
-        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products.json';
+        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken';
     http.get(Uri.parse(url)).then((response) {
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedData = [];

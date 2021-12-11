@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app_practic_28/model/http_exception.dart';
 import 'package:shop_app_practic_28/provider/auth.dart';
 
 enum AuthMode { Signup, Login }
@@ -83,6 +84,23 @@ class _AuthCardState extends State<AuthCard> {
     'email': '',
     'password': '',
   };
+  void showErrorDialog(String message) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text('Error'),
+              content: Text(message),
+              actions: [
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Okay'),
+                ),
+              ],
+            ));
+  }
+
   Future<void> _submit() async {
     if (!_fromKey.currentState!.validate()) {
       return;
@@ -91,12 +109,32 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoding = true;
     });
-    if (_authMode == AuthMode.Login) {
-      await Provider.of<Auth>(context, listen: false)
-          .login(_authData['email']!, _authData['password']!);
-    } else {
-      await Provider.of<Auth>(context, listen: false)
-          .signup(_authData['email']!, _authData['password']!);
+    try {
+      if (_authMode == AuthMode.Login) {
+        await Provider.of<Auth>(context, listen: false)
+            .login(_authData['email']!, _authData['password']!);
+      } else {
+        await Provider.of<Auth>(context, listen: false)
+            .signup(_authData['email']!, _authData['password']!);
+      }
+    } on HttpException catch (error) {
+      var errorMessaage = 'Athentication Faild';
+
+      if (error.toString().contains('EMAIL_EXISTS')) {
+        errorMessaage = 'Email Already Exists';
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errorMessaage = 'Invalid Email';
+      } else if (error.toString().contains('WEAK_PASSWORD')) {
+        errorMessaage = 'Weak Password';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessaage = 'Email Not Found';
+      } else if (error.toString().contains('INVALID_PASSWORD')) {
+        errorMessaage = 'Invalid Password';
+      }
+      showErrorDialog(errorMessaage);
+    } catch (error) {
+      var errorMessage = 'Network Problem';
+      showErrorDialog(errorMessage);
     }
     setState(() {
       _isLoding = false;

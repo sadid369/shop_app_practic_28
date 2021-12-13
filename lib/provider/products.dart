@@ -24,14 +24,14 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleIsFavorite(String authToken) async {
+  Future<void> toggleIsFavorite(String authToken, String userId) async {
     final oldStatus = isFavorite;
     final url =
-        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken';
+        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/userFavorite/$userId/$id.json?auth=$authToken';
     isFavorite = !isFavorite;
     notifyListeners();
     await http
-        .patch(Uri.parse(url), body: json.encode({'isFavorite': isFavorite}))
+        .put(Uri.parse(url), body: json.encode(isFavorite))
         .then((response) {
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);
@@ -81,7 +81,8 @@ class Products with ChangeNotifier {
     // ),
   ];
   String? authToken;
-  Products(this.authToken, this._items);
+  String? userId;
+  Products(this.authToken, this._items, this.userId);
   List<Product> get item {
     return [..._items];
   }
@@ -109,30 +110,40 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAndSetData() async {
-    final url =
-        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken';
-    http.get(Uri.parse(url)).then((response) {
+  Future<void> fetchAndSetData([bool filterByuser = false]) async {
+    final filterString =
+        filterByuser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    print(filterString);
+    var url =
+        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken&$filterString';
+    try {
+      final response = await http.get(Uri.parse(url));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedData = [];
       if (extractedData == null) {
         return;
       }
+      var urlFav =
+          'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/userFavorite/$userId.json?auth=$authToken';
+      final favoriteResponse = await http.get(Uri.parse(urlFav));
+      final favData = json.decode(favoriteResponse.body);
+
       extractedData.forEach((productID, prodyctData) {
         loadedData.add(Product(
             id: productID,
             title: prodyctData['title'],
             imageUrl: prodyctData['imageUrl'],
+            isFavorite: favData == null ? false : favData[productID] ?? false,
             description: prodyctData['description'],
             price: prodyctData['price']));
       });
       _items = loadedData;
       notifyListeners();
       print(json.decode(response.body));
-    }).catchError((error) {
+    } catch (error) {
       print(error);
       throw error;
-    });
+    }
   }
 
   Future<void> addProduct(Product product) async {
@@ -145,7 +156,7 @@ class Products with ChangeNotifier {
               'price': product.price,
               'description': product.description,
               'imageUrl': product.imageUrl,
-              'isFavorite': product.isFavorite
+              'creatorId': userId,
             }))
         .catchError((error) {
       print(error);

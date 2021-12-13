@@ -10,7 +10,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final products = Provider.of<Product>(context, listen: true);
     final cartItem = Provider.of<Cart>(context);
-    final authToken = Provider.of<Auth>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -32,7 +32,7 @@ class ProductItem extends StatelessWidget {
                 products.isFavorite ? Icons.favorite : Icons.favorite_border),
             onPressed: () async {
               await products
-                  .toggleIsFavorite(authToken.token!)
+                  .toggleIsFavorite(authData.token!, authData.userId!)
                   .catchError((error) {
                 print(error.toString());
               });

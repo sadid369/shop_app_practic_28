@@ -19,6 +19,8 @@ class OrderItem {
 }
 
 class Order with ChangeNotifier {
+  String? authToken;
+  Order(this.authToken, this._orderItems);
   List<OrderItem> _orderItems = [];
   List<OrderItem> get orderItems {
     return [..._orderItems];
@@ -26,7 +28,7 @@ class Order with ChangeNotifier {
 
   Future<void> fetchAndSetData() async {
     final url =
-        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
+        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json?auth=$authToken';
     await http.get(Uri.parse(url)).then((response) {
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       List<OrderItem> loadedData = [];
@@ -55,7 +57,7 @@ class Order with ChangeNotifier {
 
   Future<void> addItems(List<CartItem> cartItem, double amount) async {
     final url =
-        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
+        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json?auth=$authToken';
     final dateTimeStamp = DateTime.now();
     await http
         .post(Uri.parse(url),

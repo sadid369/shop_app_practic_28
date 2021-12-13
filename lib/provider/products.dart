@@ -24,10 +24,10 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleIsFavorite() async {
+  Future<void> toggleIsFavorite(String authToken) async {
     final oldStatus = isFavorite;
     final url =
-        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json';
+        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken';
     isFavorite = !isFavorite;
     notifyListeners();
     await http
@@ -94,7 +94,7 @@ class Products with ChangeNotifier {
     final productIndex = _items.indexWhere((product) => product.id == id);
     if (productIndex >= 0) {
       final url =
-          'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json';
+          'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken';
       await http.patch(Uri.parse(url),
           body: json.encode({
             'title': newProduct.title,
@@ -137,7 +137,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final url =
-        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products.json';
+        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken';
     await http
         .post(Uri.parse(url),
             body: json.encode({
@@ -169,7 +169,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteItem(String id) async {
     final url =
-        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json';
+        'https://shop-app-practic-2-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken';
     final _existingProductIndex =
         _items.indexWhere((product) => product.id == id);
     Product? _existingProduct = _items[_existingProductIndex];

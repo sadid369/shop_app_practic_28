@@ -128,14 +128,14 @@ class Products with ChangeNotifier {
       final favoriteResponse = await http.get(Uri.parse(urlFav));
       final favData = json.decode(favoriteResponse.body);
 
-      extractedData.forEach((productID, prodyctData) {
+      extractedData.forEach((productID, productData) {
         loadedData.add(Product(
             id: productID,
-            title: prodyctData['title'],
-            imageUrl: prodyctData['imageUrl'],
+            title: productData['title'],
+            imageUrl: productData['imageUrl'],
             isFavorite: favData == null ? false : favData[productID] ?? false,
-            description: prodyctData['description'],
-            price: prodyctData['price']));
+            description: productData['description'],
+            price: productData['price']));
       });
       _items = loadedData;
       notifyListeners();

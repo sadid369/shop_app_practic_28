@@ -34,9 +34,11 @@ class MyApp extends StatelessWidget {
           create: (ctx) => Cart(),
         ),
         ChangeNotifierProxyProvider<Auth, Order>(
-          create: (context) => Order('', []),
-          update: (context, auth, previousOrder) => Order(auth.token,
-              previousOrder == null ? [] : previousOrder.orderItems),
+          create: (context) => Order('', [], ''),
+          update: (context, auth, previousOrder) => Order(
+              auth.token,
+              previousOrder == null ? [] : previousOrder.orderItems,
+              auth.userId),
         ),
       ],
       child: Consumer<Auth>(
@@ -44,8 +46,8 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Shop App',
           theme: ThemeData(
-            primarySwatch: Colors.purple,
-            accentColor: Colors.deepOrange,
+            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
+                .copyWith(secondary: Colors.deepOrange),
           ),
           home: auth.isAuth ? ProductOverviewScreen() : AuthScreen2(),
           routes: {

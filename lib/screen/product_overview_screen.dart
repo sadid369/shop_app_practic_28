@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -65,6 +67,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               },
               icon: Icon(Icons.more_vert),
               itemBuilder: (_) => [
+                    // ignore: prefer_const_constructors
                     PopupMenuItem(
                       child: Text('Favorites'),
                       value: FilterOption.Favorites,

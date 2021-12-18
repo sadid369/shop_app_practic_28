@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app_practic_28/provider/auth.dart';
@@ -52,6 +54,7 @@ class ProductItem extends StatelessWidget {
                     },
                   ),
                   duration: Duration(seconds: 2),
+                  // ignore: prefer_const_constructors
                   content: Text(
                     'item Added to Cart',
                     textAlign: TextAlign.center,

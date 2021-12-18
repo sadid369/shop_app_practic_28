@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, deprecated_member_use, avoid_print, use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app_practic_28/provider/cart.dart';
@@ -35,7 +37,7 @@ class CartScreen extends StatelessWidget {
                         ),
                         backgroundColor: Theme.of(context).primaryColor,
                         elevation: 15,
-                        shadowColor: Theme.of(context).accentColor,
+                        shadowColor: Theme.of(context).colorScheme.secondary,
                       ),
                       OrderButton(cartData: cartData),
                     ],

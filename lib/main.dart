@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app_practic_28/provider/auth.dart';
 import 'package:shop_app_practic_28/provider/cart.dart';
 import 'package:shop_app_practic_28/provider/order.dart';
 import 'package:shop_app_practic_28/provider/products.dart';
+import 'package:shop_app_practic_28/screen/splash_screen.dart';
 import 'package:shop_app_practic_28/screen/auth_screen_my_own.dart';
 import 'package:shop_app_practic_28/screen/cart_screen.dart';
 import 'package:shop_app_practic_28/screen/edit_product_screen.dart';
@@ -49,7 +52,14 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
                 .copyWith(secondary: Colors.deepOrange),
           ),
-          home: auth.isAuth ? ProductOverviewScreen() : AuthScreen2(),
+          home: auth.isAuth
+              ? ProductOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, snapShot) =>
+                      snapShot.connectionState == ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen2()),
           routes: {
             ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
